@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админка — Футбольный Менеджер</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen">
+  <nav class="bg-slate-800 border-b border-slate-700">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center text-sm">
+      <a href="/" class="text-lg font-bold text-green-400">⚽ ФМ</a>
+      <div class="flex gap-4 items-center">
+        <a href="/dashboard" class="hover:text-green-400">Кабинет</a>
+        <a href="/admin" class="text-yellow-400">Админка</a>
+        <span class="text-slate-500"><%= user.username %></span>
+        <a href="/logout" class="text-red-400">Выйти</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6 text-yellow-400">Админ-панель</h1>
+
+    <div class="mb-8">
+      <form method="POST" action="/admin/play-round">
+        <button type="submit" class="bg-yellow-600 hover:bg-yellow-500 px-5 py-2 rounded-lg font-semibold">
+          ▶️ Сыграть все матчи тура (каждый с каждым)
+        </button>
+      </form>
+      <p class="text-slate-500 text-sm mt-2">Создаст матчи между всеми командами в лиге и обновит таблицу</p>
+    </div>
+
+    <h2 class="text-lg font-semibold mb-3">Пользователи (<%= users.length %>)</h2>
+    <div class="bg-slate-800 rounded-xl overflow-hidden mb-8">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-slate-300">
+          <tr>
+            <th class="text-left px-4 py-3">ID</th>
+            <th class="text-left px-4 py-3">Логин</th>
+            <th class="text-left px-4 py-3">Команда</th>
+            <th class="px-4 py-3">Админ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(u => { %>
+            <tr class="border-t border-slate-700">
+              <td class="px-4 py-2"><%= u.id %></td>
+              <td class="px-4 py-2 font-medium"><%= u.username %></td>
+              <td class="px-4 py-2 text-slate-400"><%= u.team_name || '—' %></td>
+              <td class="px-4 py-2 text-center"><%= u.is_admin ? '✅' : '' %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="text-lg font-semibold mb-3">Последние матчи</h2>
+    <div class="space-y-2">
+      <% matches.forEach(m => { %>
+        <div class="bg-slate-800 rounded-lg px-4 py-2 flex justify-between text-sm">
+          <span><%= m.home_name %></span>
+          <span class="font-bold"><%= m.home_goals %> : <%= m.away_goals %></span>
+          <span><%= m.away_name %></span>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</body>
+</html>

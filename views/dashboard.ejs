@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кабинет — Футбольный Менеджер</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen">
+  <nav class="bg-slate-800 border-b border-slate-700">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center text-sm">
+      <a href="/" class="text-lg font-bold text-green-400">⚽ ФМ</a>
+      <div class="flex gap-4 items-center">
+        <a href="/dashboard" class="text-green-400">Кабинет</a>
+        <a href="/squad" class="hover:text-green-400">Состав</a>
+        <a href="/league" class="hover:text-green-400">Лига</a>
+        <a href="/transfers" class="hover:text-green-400">Трансферы</a>
+        <% if (user.is_admin) { %><a href="/admin" class="text-yellow-400">Админка</a><% } %>
+        <span class="text-slate-500"><%= user.username %></span>
+        <a href="/logout" class="text-red-400">Выйти</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <% if (!team) { %>
+      <div class="text-center py-20">
+        <p class="text-xl text-slate-400">У тебя пока нет команды</p>
+      </div>
+    <% } else { %>
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+          <h1 class="text-3xl font-bold"><%= team.name %></h1>
+          <p class="text-slate-400">Бюджет: <span class="text-green-400 font-semibold"><%= team.budget.toLocaleString('ru-RU') %> €</span></p>
+        </div>
+        <form method="POST" action="/play-friendly">
+          <button type="submit" class="bg-green-600 hover:bg-green-500 px-5 py-2 rounded-lg font-semibold">
+            ⚽ Сыграть товарищеский матч
+          </button>
+        </form>
+      </div>
+
+      <% if (leagueInfo) { %>
+        <div class="bg-slate-800 rounded-xl p-5 mb-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div>
+            <div class="text-2xl font-bold"><%= leagueInfo.points %></div>
+            <div class="text-slate-400 text-sm">Очки</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold"><%= leagueInfo.played %></div>
+            <div class="text-slate-400 text-sm">Игры</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-green-400"><%= leagueInfo.won %></div>
+            <div class="text-slate-400 text-sm">Победы</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold"><%= leagueInfo.goals_for %>:<%= leagueInfo.goals_against %></div>
+            <div class="text-slate-400 text-sm">Мячи</div>
+          </div>
+        </div>
+      <% } %>
+
+      <h2 class="text-xl font-semibold mb-4">Лучшие игроки</h2>
+      <div class="bg-slate-800 rounded-xl overflow-hidden mb-8">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-700 text-slate-300">
+            <tr>
+              <th class="text-left px-4 py-3">Игрок</th>
+              <th class="px-4 py-3">Поз</th>
+              <th class="px-4 py-3">Возр</th>
+              <th class="px-4 py-3">Сила</th>
+              <th class="px-4 py-3">Атака</th>
+              <th class="px-4 py-3">Защита</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% players.slice(0, 8).forEach(p => { %>
+              <tr class="border-t border-slate-700 hover:bg-slate-750">
+                <td class="px-4 py-2 font-medium"><%= p.name %></td>
+                <td class="px-4 py-2 text-center text-slate-400"><%= p.position %></td>
+                <td class="px-4 py-2 text-center"><%= p.age %></td>
+                <td class="px-4 py-2 text-center font-semibold text-green-400"><%= p.skill %></td>
+                <td class="px-4 py-2 text-center"><%= p.attack %></td>
+                <td class="px-4 py-2 text-center"><%= p.defense %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <% if (recentMatches.length) { %>
+        <h2 class="text-xl font-semibold mb-4">Последние матчи</h2>
+        <div class="space-y-2">
+          <% recentMatches.forEach(m => { %>
+            <div class="bg-slate-800 rounded-lg px-4 py-3 flex justify-between items-center">
+              <span class="<%= m.home_team_id === team.id ? 'font-semibold' : '' %>"><%= m.home_name %></span>
+              <span class="font-bold text-lg"><%= m.home_goals %> : <%= m.away_goals %></span>
+              <span class="<%= m.away_team_id === team.id ? 'font-semibold' : '' %>"><%= m.away_name %></span>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    <% } %>
+  </div>
+</body>
+</html>

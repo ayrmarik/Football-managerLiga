@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Трансферы — Футбольный Менеджер</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen">
+  <nav class="bg-slate-800 border-b border-slate-700">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center text-sm">
+      <a href="/" class="text-lg font-bold text-green-400">⚽ ФМ</a>
+      <div class="flex gap-4 items-center">
+        <a href="/dashboard" class="hover:text-green-400">Кабинет</a>
+        <a href="/squad" class="hover:text-green-400">Состав</a>
+        <a href="/league" class="hover:text-green-400">Лига</a>
+        <a href="/transfers" class="text-green-400">Трансферы</a>
+        <% if (user.is_admin) { %><a href="/admin" class="text-yellow-400">Админка</a><% } %>
+        <span class="text-slate-500"><%= user.username %></span>
+        <a href="/logout" class="text-red-400">Выйти</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-2">Трансферный рынок</h1>
+    <% if (team) { %>
+      <p class="text-slate-400 mb-6">Твой бюджет: <span class="text-green-400 font-semibold"><%= team.budget.toLocaleString('ru-RU') %> €</span></p>
+    <% } %>
+
+    <% if (message) { %>
+      <div class="bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded mb-4"><%= message %></div>
+    <% } %>
+
+    <h2 class="text-lg font-semibold mb-3">Игроки на продаже</h2>
+    <% if (onMarket.length === 0) { %>
+      <p class="text-slate-500 mb-8">Пока никто не выставил игроков</p>
+    <% } else { %>
+      <div class="bg-slate-800 rounded-xl overflow-hidden mb-10">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-700 text-slate-300">
+            <tr>
+              <th class="text-left px-4 py-3">Игрок</th>
+              <th class="px-4 py-3">Поз</th>
+              <th class="px-4 py-3">Сила</th>
+              <th class="px-4 py-3">Клуб</th>
+              <th class="px-4 py-3">Цена</th>
+              <th class="px-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% onMarket.forEach(p => { %>
+              <tr class="border-t border-slate-700">
+                <td class="px-4 py-2 font-medium"><%= p.name %></td>
+                <td class="px-4 py-2 text-center"><%= p.position %></td>
+                <td class="px-4 py-2 text-center text-green-400 font-bold"><%= p.skill %></td>
+                <td class="px-4 py-2 text-center text-slate-400"><%= p.team_name || '—' %></td>
+                <td class="px-4 py-2 text-center font-semibold"><%= p.transfer_price.toLocaleString('ru-RU') %> €</td>
+                <td class="px-4 py-2 text-center">
+                  <% if (team && p.team_id !== team.id) { %>
+                    <form method="POST" action="/transfers/buy" class="inline">
+                      <input type="hidden" name="playerId" value="<%= p.id %>">
+                      <button type="submit" class="bg-green-700 hover:bg-green-600 px-3 py-1 rounded text-xs">Купить</button>
+                    </form>
+                  <% } else if (team && p.team_id === team.id) { %>
+                    <form method="POST" action="/transfers/unlist" class="inline">
+                      <input type="hidden" name="playerId" value="<%= p.id %>">
+                      <button type="submit" class="bg-red-800 hover:bg-red-700 px-3 py-1 rounded text-xs">Снять</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+
+    <% if (team && myPlayers.length) { %>
+      <h2 class="text-lg font-semibold mb-3">Выставить своего игрока</h2>
+      <div class="bg-slate-800 rounded-xl p-5">
+        <form method="POST" action="/transfers/list" class="flex flex-wrap gap-3 items-end">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Игрок</label>
+            <select name="playerId" class="bg-slate-700 border border-slate-600 rounded px-3 py-2">
+              <% myPlayers.forEach(p => { %>
+                <option value="<%= p.id %>"><%= p.name %> (<%= p.position %>, <%= p.skill %>)</option>
+              <% }) %>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Цена (€)</label>
+            <input type="number" name="price" min="10000" step="10000" placeholder="100000" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 w-32">
+          </div>
+          <button type="submit" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded">Выставить</button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Состав — Футбольный Менеджер</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen">
+  <nav class="bg-slate-800 border-b border-slate-700">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center text-sm">
+      <a href="/" class="text-lg font-bold text-green-400">⚽ ФМ</a>
+      <div class="flex gap-4 items-center">
+        <a href="/dashboard" class="hover:text-green-400">Кабинет</a>
+        <a href="/squad" class="text-green-400">Состав</a>
+        <a href="/league" class="hover:text-green-400">Лига</a>
+        <a href="/transfers" class="hover:text-green-400">Трансферы</a>
+        <% if (user.is_admin) { %><a href="/admin" class="text-yellow-400">Админка</a><% } %>
+        <span class="text-slate-500"><%= user.username %></span>
+        <a href="/logout" class="text-red-400">Выйти</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">Состав — <%= team.name %></h1>
+
+    <div class="bg-slate-800 rounded-xl overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-slate-300">
+          <tr>
+            <th class="text-left px-4 py-3">Игрок</th>
+            <th class="px-4 py-3">Поз</th>
+            <th class="px-4 py-3">Возраст</th>
+            <th class="px-4 py-3">Сила</th>
+            <th class="px-4 py-3">Атака</th>
+            <th class="px-4 py-3">Защита</th>
+            <th class="px-4 py-3">Вынос</th>
+            <th class="px-4 py-3">Цена</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% players.forEach(p => { %>
+            <tr class="border-t border-slate-700">
+              <td class="px-4 py-2 font-medium"><%= p.name %></td>
+              <td class="px-4 py-2 text-center">
+                <span class="bg-slate-700 px-2 py-0.5 rounded text-xs"><%= p.position %></span>
+              </td>
+              <td class="px-4 py-2 text-center"><%= p.age %></td>
+              <td class="px-4 py-2 text-center font-bold text-green-400"><%= p.skill %></td>
+              <td class="px-4 py-2 text-center"><%= p.attack %></td>
+              <td class="px-4 py-2 text-center"><%= p.defense %></td>
+              <td class="px-4 py-2 text-center"><%= p.stamina %></td>
+              <td class="px-4 py-2 text-center text-slate-400"><%= p.price.toLocaleString('ru-RU') ?> €</td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
